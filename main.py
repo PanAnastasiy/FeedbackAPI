@@ -1,11 +1,15 @@
 from fastapi import FastAPI
-from app.api.feedback import router as feedback_router
+from app.api.feedback_request import router as generate_router
 from app.api.candidate_status import router as status_router
 from app.api.candidate import router as candidate_router
 from app.api.skill import router as skill_router
 from app.api.habr import router as habr_router
 from app.api.feedback_section import router as section_router
+from app.api.user import router as user_router
+from app.api.feedback import router as feedback_router
 from fastapi.middleware.cors import CORSMiddleware
+# main.py или database.py
+from app.models import *  # noqa
 
 app = FastAPI()
 
@@ -18,6 +22,11 @@ app.include_router(skill_router)
 app.include_router(habr_router)
 
 app.include_router(section_router)
+app.include_router(user_router)
+
+app.include_router(feedback_router)
+
+app.include_router(generate_router)
 
 app.add_middleware(
     CORSMiddleware,

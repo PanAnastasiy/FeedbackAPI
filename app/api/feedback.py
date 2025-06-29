@@ -1,39 +1,51 @@
-from fastapi import APIRouter, HTTPException
+# api/feedback.py
 
-from app.schemas.feedback import FeedbackRequest
-from app.services.feedback_generator import generate_feedback
-from fastapi import Request, Form
-from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi import APIRouter, Depends, HTTPException
 
-router = APIRouter(prefix="/feedback", tags=["feedback"])
-templates = Jinja2Templates(directory="templates")
+from app.services.feedback import FeedbackService
+from app.schemas.feedback import FeedbackCreate, FeedbackUpdate
+from app.utils.get_service import get_service
 
 
-@router.post("/generate")
-async def generate_feedback_endpoint(request: FeedbackRequest):
-    try:
-        feedback = await generate_feedback(request.keywords)
-        return {"feedback": feedback}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+router = APIRouter(prefix="/feedbacks", tags=["Feedback"])
 
 
-@router.get("/form", response_class=HTMLResponse)
-async def feedback_form(request: Request):
-    return templates.TemplateResponse("feedback_form.html", {"request": request})
+@router.post("/")
+async def create_feedback(
+    feedback_in: FeedbackCreate,
+    service: FeedbackService = Depends(get_service(FeedbackService)),
+):
+    return await service.create(feedback_in)
 
 
-@router.post("/generate_html", response_class=HTMLResponse)
-async def generate_feedback_form(request: Request, keywords: str = Form(...)):
-    try:
-        feedback = await generate_feedback(keywords)
-        return templates.TemplateResponse("feedback_form.html", {
-            "request": request,
-            "feedback": feedback
-        })
-    except Exception as e:
-        return templates.TemplateResponse("feedback_form.html", {
-            "request": request,
-            "error": str(e)
-        })
+@router.get("/")
+async def get_all_feedbacks(service: FeedbackService = Depends(get_service(FeedbackService))):
+    return await service.get_all()
+
+
+@router.get("/{feedback_id}")
+async def get_feedback(
+    feedback_id: int,
+    service: FeedbackService = Depends(get_service(FeedbackService)),
+):
+    feedback = await service.get_by_id(feedback_id)
+    if not feedback:
+        raise HTTPException(status_code=404, detail="Feedback not found")
+    return feedback
+
+
+@router.put("/{feedback_id}")
+async def update_feedback(
+    feedback_id: int,
+    feedback_in: FeedbackUpdate,
+    service: FeedbackService = Depends(get_service(FeedbackService)),
+):
+    return await service.update(feedback_id, feedback_in)
+
+
+@router.delete("/{feedback_id}")
+async def delete_feedback(
+    feedback_id: int,
+    service: FeedbackService = Depends(get_service(FeedbackService)),
+):
+    return await service.delete(feedback_id)

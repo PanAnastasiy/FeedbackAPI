@@ -25,7 +25,7 @@ class CandidateOut(BaseModel):
     fullname: str
     email: str
     position: str
-    created_at: datetime
+    created_at: Optional[datetime]
     status_obj: Optional[CandidateStatusOut] = Field(None, exclude=True)
 
     @computed_field

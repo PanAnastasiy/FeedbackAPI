@@ -10,14 +10,23 @@ client = OpenAI(
 )
 
 
-async def generate_feedback(keywords: list[str]) -> str:
+async def generate_feedback(keywords: str, section_name: str = "") -> str:
+    # Преобразуем строку ключевых слов в список
+    keyword_list = [kw.strip() for kw in keywords.split(',') if kw.strip()]
+
+    # Без ключевых слов — вернём сообщение по умолчанию
+    if not keyword_list:
+        return f"Раздел «{section_name}»: Недостаточно данных для генерации фидбека."
+
     prompt = (
-        "Составь профессиональный на, грамотный и краткий фидбек по кандидату НА РУССКОМ ЯЗЫКЕ, основываясь на следующих ключевых фразах:\n\n"
-        + "\n".join(f"- {kw}" for kw in keywords) + "НА РУССКОМ ЯЗЫКЕ !!!"
+        f"Составь краткий, профессиональный фидбек на русском языке по кандидату в разделе «{section_name}», "
+        "основываясь на следующих ключевых фразах:\n\n" +
+        "\n".join(f"- {kw}" for kw in keyword_list) +
+        "\n\nОтвет должен быть на русском языке!"
     )
 
     response = client.chat.completions.create(
-        model="mistralai/Mixtral-8x7B-Instruct-v0.1",  # или другая модель с https://docs.together.ai/docs/inference-models
+        model="mistralai/Mixtral-8x7B-Instruct-v0.1",
         messages=[
             {"role": "user", "content": prompt}
         ],
@@ -26,3 +35,4 @@ async def generate_feedback(keywords: list[str]) -> str:
     )
 
     return response.choices[0].message.content.strip()
+

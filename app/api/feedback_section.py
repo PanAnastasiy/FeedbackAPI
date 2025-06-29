@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 
 from app.db.database import get_async_session
-from app.schemas.feedback_sections import FeedbackSectionCreate, FeedbackSectionUpdate
+from app.schemas.feedback_section import FeedbackSectionCreate, FeedbackSectionUpdate
 from app.services.feedback_sections import FeedbackSectionService
 from app.utils.get_service import get_service
 
