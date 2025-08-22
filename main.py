@@ -1,3 +1,6 @@
+import os
+
+import uvicorn
 from fastapi import FastAPI
 from app.api.feedback_request import router as generate_router
 from app.api.candidate_status import router as status_router
@@ -42,3 +45,8 @@ app.add_middleware(
 @app.get("/")
 async def root():
     return {"message": "Feedback API is running"}
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # Railway задает PORT автоматически
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=True)
