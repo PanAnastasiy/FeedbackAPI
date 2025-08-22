@@ -7,9 +7,9 @@ from app.api.habr import router as habr_router
 from app.api.feedback_section import router as section_router
 from app.api.user import router as user_router
 from app.api.feedback import router as feedback_router
+from app.api.auth import router as auth_router
 from fastapi.middleware.cors import CORSMiddleware
-# main.py или database.py
-from app.models import *  # noqa
+from app.models import *
 
 app = FastAPI()
 
@@ -23,6 +23,8 @@ app.include_router(habr_router)
 
 app.include_router(section_router)
 app.include_router(user_router)
+
+app.include_router(auth_router)
 
 app.include_router(feedback_router)
 
