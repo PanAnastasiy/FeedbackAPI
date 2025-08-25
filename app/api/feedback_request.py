@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 
 from app.schemas.generate_request import GenerateRequest
 from app.services.feedback_generator import generate_feedback, client
@@ -6,11 +6,13 @@ from fastapi import Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse
 
+from app.utils.get_current_user import get_current_user
+
 router = APIRouter()
 
 
 @router.post("/generate")
-async def generate(req: GenerateRequest):
+async def generate(req: GenerateRequest, current_user=Depends(get_current_user)):
     keyword_list = [kw.strip() for kw in req.keywords.split(',') if kw.strip()]
     skill_lines = [f"{skill.name} (уровень {skill.level}/5)" for skill in req.skills]
     all_clues = keyword_list + skill_lines

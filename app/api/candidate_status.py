@@ -3,13 +3,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_async_session
 from app.services.candidate_status import CandidateStatusService
 from app.schemas.candidate_status import CandidateStatusCreate, CandidateStatusUpdate
+from app.utils.get_current_user import get_current_user
 from app.utils.get_service import get_service
 
 router = APIRouter()
 
 
 @router.get("/statuses")
-async def get_statuses(session: AsyncSession = Depends(get_async_session)):
+async def get_statuses(session: AsyncSession = Depends(get_async_session), current_user=Depends(get_current_user)):
     try:
         service = CandidateStatusService(session)
         return await service.get_all()
@@ -23,6 +24,7 @@ async def get_statuses(session: AsyncSession = Depends(get_async_session)):
 async def create_status(
     status_in: CandidateStatusCreate,
     service: CandidateStatusService = Depends(get_service(CandidateStatusService)),
+        current_user=Depends(get_current_user)
 ):
     return await service.create(status_in)
 
@@ -31,6 +33,7 @@ async def create_status(
 async def get_status(
     status_id: int,
     service: CandidateStatusService = Depends(get_service(CandidateStatusService)),
+        current_user=Depends(get_current_user)
 ):
     return await service.get_by_id(status_id)
 
@@ -40,6 +43,7 @@ async def update_status(
     status_id: int,
     status_in: CandidateStatusUpdate,
     service: CandidateStatusService = Depends(get_service(CandidateStatusService)),
+        current_user=Depends(get_current_user)
 ):
     return await service.update(status_id, status_in)
 
@@ -48,5 +52,6 @@ async def update_status(
 async def delete_status(
     status_id: int,
     service: CandidateStatusService = Depends(get_service(CandidateStatusService)),
+        current_user=Depends(get_current_user)
 ):
     return await service.delete(status_id)

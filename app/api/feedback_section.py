@@ -5,13 +5,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_async_session
 from app.schemas.feedback_section import FeedbackSectionCreate, FeedbackSectionUpdate
 from app.services.feedback_sections import FeedbackSectionService
+from app.utils.get_current_user import get_current_user
 from app.utils.get_service import get_service
 
 router = APIRouter()
 
 
 @router.get("/sections")
-async def get_sections(session: AsyncSession = Depends(get_async_session)):
+async def get_sections(session: AsyncSession = Depends(get_async_session), current_user=Depends(get_current_user)):
     try:
         service = FeedbackSectionService(session)
         return await service.get_all()
@@ -25,6 +26,7 @@ async def get_sections(session: AsyncSession = Depends(get_async_session)):
 async def create_section(
     section_in: FeedbackSectionCreate,
     service: FeedbackSectionService = Depends(get_service(FeedbackSectionService)),
+current_user=Depends(get_current_user)
 ):
     return await service.create(section_in)
 
@@ -33,6 +35,7 @@ async def create_section(
 async def get_section(
     section_id: int,
     service: FeedbackSectionService = Depends(get_service(FeedbackSectionService)),
+current_user=Depends(get_current_user)
 ):
     return await service.get_by_id(section_id)
 
@@ -42,6 +45,7 @@ async def update_section(
     section_id: int,
     section_in: FeedbackSectionUpdate,
     service: FeedbackSectionService = Depends(get_service(FeedbackSectionService)),
+current_user=Depends(get_current_user)
 ):
     return await service.update(section_id, section_in)
 
@@ -50,5 +54,6 @@ async def update_section(
 async def delete_section(
     section_id: int,
     service: FeedbackSectionService = Depends(get_service(FeedbackSectionService)),
+current_user=Depends(get_current_user)
 ):
     return await service.delete(section_id)

@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.db.database import get_async_session
+from app.utils.get_current_user import get_current_user
 from app.utils.get_service import get_service
 from app.schemas.user import UserCreate, UserUpdate
 from app.services.user import UserService
@@ -10,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/users")
-async def get_users(session: AsyncSession = Depends(get_async_session)):
+async def get_users(session: AsyncSession = Depends(get_async_session), current_user=Depends(get_current_user)):
     try:
         service = UserService(session)
         return await service.get_all()
@@ -24,6 +25,7 @@ async def get_users(session: AsyncSession = Depends(get_async_session)):
 async def create_user(
     user_in: UserCreate,
     service: UserService = Depends(get_service(UserService)),
+current_user=Depends(get_current_user)
 ):
     return await service.create(user_in)
 
@@ -32,6 +34,7 @@ async def create_user(
 async def get_user(
     user_id: int,
     service: UserService = Depends(get_service(UserService)),
+current_user=Depends(get_current_user)
 ):
     return await service.get_by_id(user_id)
 
@@ -41,6 +44,7 @@ async def update_user(
     user_id: int,
     user_in: UserUpdate,
     service: UserService = Depends(get_service(UserService)),
+current_user=Depends(get_current_user)
 ):
     return await service.update(user_id, user_in)
 
@@ -49,5 +53,6 @@ async def update_user(
 async def delete_user(
     user_id: int,
     service: UserService = Depends(get_service(UserService)),
+current_user=Depends(get_current_user)
 ):
     return await service.delete(user_id)
