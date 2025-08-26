@@ -4,7 +4,7 @@ from sqlalchemy.exc import OperationalError
 from asyncpg.exceptions import ConnectionDoesNotExistError
 import asyncio
 
-DATABASE_URL = "postgresql+asyncpg://root:root@localhost:5432/feedback_candidate_db"
+DATABASE_URL = "postgresql+asyncpg://postgres:LexaFoLAFqBLyEKoNihCYuXqQvrRNwdT@yamanote.proxy.rlwy.net:44867/railway"
 
 engine = create_async_engine(
     DATABASE_URL,
